@@ -1,0 +1,206 @@
+    <!-- Page Title Starts -->
+    <div class="mb-6 flex flex-col justify-between gap-y-1 sm:flex-row sm:gap-y-0">
+      <h5>Analytics</h5>
+
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <a href="/">Home</a>
+        </li>
+        <li class="breadcrumb-item">
+          <a href="#">Analytics</a>
+        </li>
+      </ol>
+    </div>
+    <!-- Page Title Ends -->
+    <div class="spinner-pulse loading fade-in">
+      <div class="spinner-pulse-success"></div>
+      <div class="spinner-pulse-success"></div>
+    </div>
+    <!-- Filter Start -->
+    <div class="space-y-6 ctent">
+      <section class="mb-6 grid grid-cols-2 gap-6 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-2">
+        <div class="card" >
+          <div class="card-body items-center gap-4">
+            <div class="text-primary-500 text-2xl">
+               START DATE
+            </div>
+            <input class="text-primary-500" type="date" id="begin" name="begin"> 
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body items-center gap-4">
+            <div class="text-primary-500 text-2xl">
+               END DATE
+            </div>
+            <input class="text-primary-500" type="date" id="end" name="end"> 
+          </div>
+        </div>
+      </section>
+    </div>
+    <!-- Filter Ends -->
+    
+    <div class="space-y-6 ctent">
+
+      <!-- Overview Section Start -->
+      <section class="grid grid-cols-1 gap-6 sm:grid-cols-1 xl:grid-cols-3">
+
+        <!-- OEE  -->
+        <div class="card">
+          <div class="card-body flex items-center gap-4">
+            <div class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-primary-500 bg-opacity-20 text-primary-500 text-3xl">
+              <i class="bx bxs-factory" ></i>
+            </div>
+            <div class="flex flex-1 flex-col gap-1">
+              <p class="text-3xl tracking-wide text-primary-500">OEE</p>
+              <div class="flex flex-wrap items-baseline justify-between gap-2">
+                <h4 class="text-2xl" id="kpi_oee">--</h4>
+              </div>
+            </div>
+          </div>
+        </div>
+
+         <!-- AVAILABILITY  -->
+         <div class="card">
+          <div class="card-body flex items-center gap-4">
+            <div class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-primary-500 bg-opacity-20 text-primary-500 text-3xl">
+              <i class="bx bxs-bolt" ></i>
+            </div>
+            <div class="flex flex-1 flex-col gap-1">
+              <p class="text-3xl tracking-wide text-primary-500">AVAILABILITY</p>
+              <div class="flex flex-wrap items-baseline justify-between gap-2">
+                <h4 class="text-2xl" id="kpi_avail">--</h4>
+              </div>
+            </div>
+          </div>
+        </div>
+
+         <!-- QUALITY  -->
+         <div class="card">
+          <div class="card-body flex items-center gap-4">
+            <div class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-primary-500 bg-opacity-20 text-primary-500 text-3xl">
+              <i class="bx bx-equalizer" ></i>
+            </div>
+            <div class="flex flex-1 flex-col gap-1">
+              <p class="text-3xl tracking-wide text-primary-500">QUALITY</p>
+              <div class="flex flex-wrap items-baseline justify-between gap-2">
+                <h4 class="text-2xl" id="kpi_quality">--</h4>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+      <!-- Overview Section End -->
+
+      <!-- KPI Section Start -->
+      <section class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-4">
+
+         <!-- First Pass Yield  -->
+         <div class="card">
+          <div class="card-body flex items-center gap-4">
+            <div class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-primary-500 bg-opacity-20 text-primary-500 text-3xl">
+              <i class="bx bxs-cog" ></i>
+            </div>
+            <div class="flex flex-1 flex-col gap-1">
+              <p class="text-2md tracking-wide text-primary-500">FIRST PASS YIELD</p>
+              <div class="flex flex-wrap items-baseline justify-between gap-2">
+                <h4 class="text-2xl" id="kpi_fpy">--</h4>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rejection Rate  -->
+        <div class="card">
+          <div class="card-body flex items-center gap-4">
+            <div class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-primary-500 bg-opacity-20 text-primary-500 text-3xl">
+              <i class="bx bxs-log-out" ></i>
+            </div>
+            <div class="flex flex-1 flex-col gap-1">
+              <p class="text-2md tracking-wide text-primary-500">REJECTION RATE</p>
+              <div class="flex flex-wrap items-baseline justify-between gap-2">
+                <h4 class="text-2xl" id="kpi_rrt">--</h4>
+              </div>
+            </div>
+          </div>
+        </div>
+
+         <!-- DownTime Analysis  -->
+         <div class="card">
+          <div class="card-body flex items-center gap-4">
+            <div class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-primary-500 bg-opacity-20 text-primary-500 text-3xl">
+              <i class="bx bxs-calendar-check" ></i>
+            </div>
+            <div class="flex flex-1 flex-col gap-1">
+              <p class="text-2md tracking-wide text-primary-500">PLANNED DOWNTIME</p>
+              <div class="flex flex-wrap items-baseline justify-between gap-2">
+                <h4 class="text-2xl" id="kpi_dap">--</h4>
+              </div>
+            </div>
+          </div>
+        </div>
+
+         <!-- DownTime Analysis  -->
+         <div class="card">
+          <div class="card-body flex items-center gap-4">
+            <div class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-primary-500 bg-opacity-20 text-primary-500 text-3xl">
+              <i class="bx bxs-calendar-x" ></i>
+            </div>
+            <div class="flex flex-1 flex-col gap-1">
+              <p class="text-2md tracking-wide text-primary-500">UNPLANNED DOWNTIME</p>
+              <div class="flex flex-wrap items-baseline justify-between gap-2">
+                <h4 class="text-2xl" id="kpi_dau">--</h4>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+      <!-- KPI Section End -->
+
+      <!-- VIZ Section Start -->
+      <section class="grid grid-cols-1 gap-6 sm:grid-cols-1 xl:grid-cols-2">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Daily Production Efficiency</h4>
+              <div id="efficiencyChart"></div>
+          </div>    
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Downtime Breakdown</h4>
+              <div id="downtimeChart"></div>
+          </div>
+        </div>
+
+      </section>
+      <!-- VIZ Section End -->
+       
+    </div>
+
+    <style>
+      .fade-in.show {
+        opacity: 1;
+      }
+      .fade-in {
+        opacity: 0.1;
+        transition: opacity 2s ease-in-out;
+      }
+      .spinner-pulse>div {
+        border-width: 10em;
+        border-color: rgb(1 154 154);
+      }
+      .loading{
+        opacity: 0;
+        position: absolute;
+        width: 100%;
+        height: auto;
+        aspect-ratio: 1 / 1; 
+      }
+      .ctent{
+        display: none;
+      }
+    </style>
+
+
+  

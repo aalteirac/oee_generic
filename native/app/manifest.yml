@@ -1,0 +1,38 @@
+manifest_version: 1
+
+artifacts:
+   setup_script: setup_script.sql
+   readme: README.md
+   default_web_endpoint: 
+      service: core.oee
+      endpoint: ui
+   container_services:
+      images:
+      - /oee_app/devops/img/oee_frontbackend:latest
+
+configuration:
+   log_level: DEBUG
+   grant_callback: core.grant_callback
+
+privileges:
+- IMPORTED PRIVILEGES ON SNOWFLAKE DB:
+      description: "Enables application to use Snowflake Functions"
+- BIND SERVICE ENDPOINT:
+     description: "A service that can respond to requests from public endpoints."
+- CREATE COMPUTE POOL:
+     description: "Permission to create compute pools for running services"
+        
+lifecycle_callbacks:
+  version_initializer: app_public.version_init
+
+references:
+- GOOGLE_REF:
+   label: "External Access Integration for CSP"
+   description: "This EAI is required for Cortext Rest API access (buggy otherwise) and Fonts..."
+   privileges:
+      - USAGE
+   object_type: EXTERNAL_ACCESS_INTEGRATION
+   register_callback: core.register_single_callback
+   configuration_callback: core.get_configuration
+   required_at_setup: true
+

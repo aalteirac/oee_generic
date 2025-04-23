@@ -1,0 +1,8 @@
+spec:
+  containers:
+  - name: oee
+    image: /oee_app/devops/img/oee_frontbackend:latest
+  endpoints:
+    - name: ui
+      port: 8080
+      public: true

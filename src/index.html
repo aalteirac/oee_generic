@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="./images/favico.webp" type="image/svg+xml" />
+    <title>OEE</title>
+    <meta name="description" content=""/>
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200;1,300;1,400;1,500;1,600;1,700&display=swap"
+      rel="stylesheet" crossorigin
+    />
+    <style>
+      .apexcharts-menu{
+        padding: 0 !important;
+        color: darkslategray;
+      }
+      deep-chat#genie {
+        border-width: 0px !important;
+      }
+      code.sql {
+        font-family: monospace;
+        background-color: #000;
+      }
+      .sql-hl-keyword {
+        color: #2bb5e8;
+      }
+      .sql-hl-function {
+        color: #ff0000;
+      }
+      .sql-hl-number {
+        color: #00ff00;
+      }
+      .sql-hl-string {
+        color: #00ff00;
+      }
+      .sql-hl-special {
+        color: #ffff00;
+      }
+      .sql-hl-bracket {
+        color: #ffff00;
+      }
+    </style>
+    <link rel="stylesheet" href="./scss/app.scss" />
+    <script>
+      var secure= 'https:' == document.location.protocol ? 'wss' : 'ws';
+      if (
+        localStorage.getItem('theme') === 'dark' ||
+        (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)
+      ) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+      function parseEvent(input) {
+        return input
+        .trim()
+        .split(/\n\n+/)
+        .map(block => {
+          const lines = block.trim().split('\n');
+          const eventLine = lines.find(line => line.startsWith('event:'));
+          const dataLine = lines.find(line => line.startsWith('data:'));
+
+          const event = eventLine.slice(7).trim(); // remove 'event: '
+          const dataJson = dataLine.slice(6).trim(); // remove 'data: '
+
+          return {
+            event,
+            data: JSON.parse(dataJson)
+          };
+        });
+      }
+
+      function initSocket(){
+            var index=0;
+            var sugindex=-1;
+            var socket;
+            try {
+              socket = new WebSocket(`${secure}://${window.location.host}/`);
+            } catch (error) {
+              window.location.reload();
+            }
+
+            socket.onmessage = function(e) {
+               // GET ID
+               try {
+                if (JSON.parse(e.data).IDWS){
+                 window.IDWS=JSON.parse(e.data).IDWS;
+                 console.log('ID GET, WEBSOCKET CONNECTED',IDWS);
+                 return;
+                }
+               } catch (error) {
+                  
+               }
+               // END ID
+               let all=parseEvent(e.data);
+               var chat=document.getElementById("genie")
+               for (const jse of all) {
+                if(jse.data){
+                  window.scrollDown();
+                  if(jse.event=="message.content.delta"){
+                    if (chat && jse.data.type=="text"){
+                      var len=chat.getMessages().length;
+                      var idx=0;
+                      if(len>0)
+                        idx=len-1;
+                      var curt=chat.getMessages()[idx].html
+                      if (jse.data.index!=index){
+                        // const now = new Date();
+                        // const hour = now.getHours();   
+                        // const seconds = now.getSeconds(); 
+                        // const hh = `${hour.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                        // chat.addMessage( {html:hh+' '+jse.data.text_delta.replace('.','<br>')} )
+                        index=jse.data.index;
+                      }
+                      else{
+                        if(curt)
+                          curt=curt.replace('<div class="loading-message-dots"></div>','')
+                        chat.updateMessage({html: curt+jse.data.text_delta.replace('.','<br>')}, idx);
+                      }
+                      
+                    }
+                    if (chat && jse.data.type=="suggestions"){
+                      if (jse.data.index!=index){
+                        console.log('ADD')
+                        if(jse.data.suggestions_delta.index!= sugindex){
+                          sugindex=jse.data.suggestions_delta.index;
+                          chat.addMessage({html:`<button class="deep-chat-button deep-chat-suggestion-button">${jse.data.suggestions_delta.suggestion_delta}</button>`, role: "ai"});
+                        }else{
+                          console.log('UPDATE')
+                          var len=chat.getMessages().length;
+                          var idx=0;
+                          if(len>0)
+                            idx=len-1;
+                          var curt=chat.getMessages()[idx].html
+                          var div = document.createElement('div');
+                          div.innerHTML = curt.trim();
+                          const elements = div.getElementsByClassName('deep-chat-suggestion-button');
+                          const texts = Array.from(elements).map(el => el.innerText); 
+                          chat.updateMessage({html:`<button class="deep-chat-button deep-chat-suggestion-button">${texts+jse.data.suggestions_delta.suggestion_delta}</button>` }, idx);
+                        }
+                      }
+                    }
+                    if (chat && jse.data.type=="sql"){
+                      window.sendQuery(jse.data.statement_delta);
+                    }
+                  }
+                  if(jse.event=="message.content.delta" && jse.data.type=="text" && jse.data.text_delta.indexOf("I apologize, ")!=-1){
+                    if (chat){
+                      chat.addMessage({html:jse.data.text_delta, role: "ai"});
+                    }
+                  }
+                  if(jse.event=="status" && jse.data.status=="generating_sql"){
+                    if (chat){
+                      chat.addMessage({html:jse.data.status_message, role: "ai"});
+                    }
+                  }
+                  if(jse.event=="status" && jse.data.status=="generating_suggestions"){
+                    if (chat){
+                      chat.addMessage({html:jse.data.status_message, role: "ai"});
+                    }
+                  }
+                  if(jse.event=="status" && jse.data.status=="done"){
+                    index=0;
+                    sugindex=-1;
+                  }
+                }
+              }
+               
+            };
+
+            socket.onopen = function(e) {
+   
+            };
+            socket.onclose=function(){
+              console.log('Reconnecting Websocket...')
+              setTimeout(initSocket(), 5000);
+            }
+         }
+      initSocket();   
+    </script>
+  </head>
+  <img style="display:none" src="images/query.png" alt="Button Image" width="20" height="20">
+  <img style="display:none" src="images/s.png" alt="Button Image" width="20" height="20">
+  <img style="display:none" src="images/worker.png" alt="Button Image" width="20" height="20">
+  <body>
+    <div id="app">
+      <!-- Sidebar Starts -->
+      <aside class="sidebar">
+        <!-- Sidebar Header Starts -->
+        <a href="/">
+          <div class="sidebar-header">
+            <div class="sidebar-logo-icon">
+              <img src="./images/favico.webp" alt="logo" class="h-[45px]" />
+            </div>
+
+            <div class="sidebar-logo-text">
+              <h1 class="flex text-xl">
+                <img src="./images/logo_brand.png" alt="logo" class="h-[25px]" />
+              </h1>
+
+              <p class="whitespace-nowrap text-xs text-slate-400">OEE - Powered by Snowflake</p>
+            </div>
+          </div>
+        </a>
+        <!-- Sidebar Header Ends -->
+
+        <!-- Sidebar Menu Starts -->
+        <ul class="sidebar-content">
+          <!-- Dashboard -->
+          <li>
+            <a href="javascript:void(0);" class="sidebar-menu active">
+              <span class="sidebar-menu-icon">
+                <i data-feather="home"></i>
+              </span>
+              <span class="sidebar-menu-text">Menu</span>
+              <span class="sidebar-menu-arrow">
+                <i data-feather="chevron-right"></i>
+              </span>
+            </a>
+            <ul class="sidebar-submenu">
+              <!-- <li>
+                <a href="/" class="sidebar-submenu-item active">Analytics</a>
+              </li> -->
+              <li>
+                <a onclick="loadPage('/dash_one.html')" href="#" class="sidebar-submenu-item">Analytics</a>
+              </li>
+              <li>
+                <a onclick="loadPage('/dash_two.html')" href="#" class="sidebar-submenu-item">Talk to Data</a>
+              </li>
+            </ul>
+          </li>
+        </ul>  
+          
+      </aside>
+      <!-- Sidebar Ends -->
+
+      <!-- Wrapper Starts -->
+      <div class="wrapper">
+        <!-- Header Starts -->
+        <header class="header">
+          <div class="container-fluid flex items-center justify-between">
+            <!-- Sidebar Toggle & Search Starts -->
+            <div class="flex items-center space-x-6 overflow-visible">
+              <button class="sidebar-toggle">
+                <span class="flex space-x-4">
+                  <svg
+                    stroke="currentColor"
+                    fill="none"
+                    stroke-width="0"
+                    viewBox="0 0 24 24"
+                    height="22"
+                    width="22"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M4 6h16M4 12h8m-8 6h16"
+                    ></path>
+                  </svg>
+                </span>
+              </button>
+
+              <!-- Mobile Search Starts -->
+              <div class="sm:hidden">
+                <button
+                  type="button"
+                  data-trigger="search-modal"
+                  class="flex items-center justify-center rounded-full text-slate-500 transition-colors duration-150 hover:text-primary-500 focus:text-primary-500 dark:text-slate-400 dark:hover:text-slate-300"
+                >
+                  <i width="22" height="22" data-feather="search"></i>
+                </button>
+              </div>
+              <!-- Mobile Search Ends -->
+
+              <!-- Searchbar Start -->
+              <button
+                type="button"
+                data-trigger="search-modal"
+                class="group hidden h-10 w-72 items-center overflow-hidden rounded-primary bg-slate-100 px-3 shadow-sm dark:border-transparent dark:bg-slate-700 sm:flex"
+              >
+                <i class="text-slate-400" width="1em" height="1em" data-feather="search"></i>
+                <span class="ml-2 text-sm text-slate-400">Search</span>
+              </button>
+              <!-- Searchbar Ends -->
+            </div>
+            <!-- Sidebar Toggle & Search Ends -->
+
+            <!-- Header Options Starts -->
+            <div class="flex items-center">
+              <!-- Language Dropdown Starts -->
+              <div class="dropdown" data-strategy="absolute">
+                <div class="dropdown-toggle px-3">
+                  <button
+                    type="button"
+                    class="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-slate-700 focus:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300 dark:focus:text-slate-300"
+                  >
+                    <span class="fi fi-gb"></span>
+                    <span class="hidden font-medium md:inline-block">English</span>
+                    <span class="inline-block font-medium md:hidden">EN</span>
+                  </button>
+                </div>
+
+                <div class="dropdown-content mt-3 w-40">
+                  <ul class="dropdown-list">
+                    <li class="dropdown-list-item">
+                      <button class="dropdown-btn" type="button">
+                        <span class="fi fi-gb"></span>
+                        <span class="">English</span>
+                      </button>
+                    </li>
+                    <li class="dropdown-list-item">
+                      <button class="dropdown-btn" type="button">
+                        <span class="fi fi-de"></span>
+                        <span class="">German</span>
+                      </button>
+                    </li>
+                    <li class="dropdown-list-item">
+                      <button class="dropdown-btn" type="button">
+                        <span class="fi fi-gf"></span>
+                        <span class="">French</span>
+                      </button>
+                    </li>
+                    <li class="dropdown-list-item">
+                      <button class="dropdown-btn" type="button">
+                        <span class="fi fi-sa"></span>
+                        <span class="">Arabic</span>
+                      </button>
+                    </li>
+                    <li class="dropdown-list-item">
+                      <button class="dropdown-btn" type="button">
+                        <span class="fi fi-cn"></span>
+                        <span class="">Chinese</span>
+                      </button>
+                    </li>
+                    <li class="dropdown-list-item">
+                      <button class="dropdown-btn" type="button">
+                        <span class="fi fi-bd"></span>
+                        <span class="">Bangla</span>
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <!-- Language Dropdown Ends -->
+
+              <!-- Dark Mood Toggle Starts -->
+              <div class="dropdown" data-strategy="absolute" id="theme-switcher-dropdown">
+                <button
+                  class="dropdown-toggle px-3 text-slate-500 hover:text-slate-700 focus:text-primary-500 dark:text-slate-400 dark:hover:text-slate-300 dark:focus:text-primary-500"
+                  type="button"
+                >
+                  <i class="hidden dark:block" width="24" height="24" data-feather="moon"></i>
+                  <i class="block dark:hidden" width="24" height="24" data-feather="sun"></i>
+                </button>
+
+                <div class="dropdown-content mt-3 w-36">
+                  <ul class="dropdown-list">
+                    <li class="dropdown-list-item">
+                      <button type="buttton" class="dropdown-btn" data-theme-mode="light">
+                        <i width="16" height="16" data-feather="sun"></i>
+                        <span>Light</span>
+                      </button>
+                    </li>
+
+                    <li class="dropdown-list-item">
+                      <button type="buttton" class="dropdown-btn" data-theme-mode="dark">
+                        <i width="16" height="16" data-feather="moon"></i>
+                        <span>Dark</span>
+                      </button>
+                    </li>
+
+                  </ul>
+                </div>
+              </div>
+              <!-- Dark Mood Toggle Ends -->
+            </div>
+            <!-- Header Options Ends -->
+          </div>
+        </header>
+        <!-- Header Ends -->
+
+        <!-- Page Content Starts -->
+        <div class="content">
+          <!-- Main Content Starts -->
+          <main class="container flex-grow p-4 sm:p-6" id="curpage">
+           
+          </main>
+          <!-- Main Content Ends -->
+
+          <!-- Footer Starts -->
+          <footer class="footer">
+            <p class="text-sm">
+              Copyright © 2025
+              <a class="text-primary-500 hover:underline" href="https://snowflake.com" target="_blank">
+                Anthony Alteirac
+              </a>
+            </p>
+
+            <p class="flex items-center gap-1 text-sm">
+              Hand-crafted &amp; Made with
+              <i class="text-danger-500" data-feather="heart" height="1em" width="1em"></i>
+            </p>
+          </footer>
+          <!-- Footer Ends -->
+        </div>
+        <!-- Page Content Ends -->
+      </div>
+      <!-- Wrapper Ends -->
+
+      <!-- Modal QUERY Result Start -->
+      <div class="modal modal-full" id="modal-history">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header flex items-center justify-between">
+                   Questions History
+                   <button type="button" class="btn btn-plain-secondary dark:text-slate-300 dark:hover:bg-slate-700 dark:focus:bg-slate-700" data-dismiss="modal">
+                    <i data-feather="x" width="1.5rem" height="1.5rem"></i>
+                  </button>
+                </div>
+                <div class="modal-body" id="history">
+                  <div class="container flex-grow p-4 sm:p-6">
+                    <div class="accordion" id="queries"></div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                    <!-- ..... -->
+                </div>
+            </div>
+        </div>
+      </div>
+       <!-- Modal QUERY Result End -->
+
+      <!-- Search Modal Start -->
+      <div class="modal" id="search-modal">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header px-4 sm:px-6">
+              <div class="group flex items-center">
+                <i
+                  data-feather="search"
+                  class="text-slate-500 group-focus-within:text-slate-600 dark:text-slate-400 dark:group-focus-within:text-slate-300"
+                ></i>
+                <input
+                  type="text"
+                  class="w-full border-none bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400 focus:ring-0 dark:text-slate-200"
+                  placeholder="Search"
+                />
+                <button
+                  class="rounded-primary bg-slate-100 px-2 py-1 text-[10px] font-semibold text-slate-600 hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600"
+                  data-dismiss="modal"
+                >
+                  ESC
+                </button>
+              </div>
+            </div>
+            <div class="modal-body max-h-[600px] px-4 py-6 sm:px-6"></div>
+          </div>
+        </div>
+      </div>
+      <!-- Search Modal Ends -->
+    </div>
+    <script src="./js/chat.js" type="module"></script>
+    <script src="./js/oee.js" type="module"></script>
+    <script src="./js/app.js" type="module"></script>
+    <script src="./js/custom/analytics.js" type="module"></script>
+    <script src="./js/custom/genie.js" type="module"></script>
+    
+  </body>
+</html>

@@ -1,0 +1,82 @@
+name: Manufacturing_Analytics_Model
+description: A semantic model to analyze manufacturing metrics and downtime.
+custom_instructions: "Never include rows with NULL result, Do not include start TS of end TS in the query results. Returns days and months with strings like 'Monday' for day and 'August' for month for example" 
+tables:
+- name: OEE
+  description: Semantic Layer for IOT
+  base_table:
+    database: #db#
+    schema: #sc#
+    table: #tb#
+
+  dimensions:
+
+    - name: PLANNED_DOWNTIME
+      expr: PLANNED_DOWNTIME
+      description: Indicates if there was planned downtime during the production run.
+      data_type: boolean
+
+    - name: UNPLANNED_DOWNTIME
+      expr: UNPLANNED_DOWNTIME
+      description: Indicates if there was unplanned downtime during the production run.
+      data_type: boolean
+
+  time_dimensions:
+    - name: ACTUAL_CYCLE_TIME
+      expr: ACTUAL_CYCLE_TIME
+      description: The time stamp that identifies the actual cycle
+      unique: true
+      data_type: TIME
+      synonyms:
+      - "cycle time"
+      sample_values:
+      - "00:00:01"  
+      - "00:00:30" 
+    - name: TS
+      expr: TS
+      description: The time stamp that identifies the event time
+      unique: true
+      data_type: TIMESTAMP_NTZ
+      synonyms:
+      - "TS"
+      - "Timesptamp"
+      - "Date"
+      sample_values:
+      - "2025-04-05 18:28:44.452" 
+      - "2025-04-05 18:52:45.009"   
+
+  measures:
+    - name: GOOD_COUNT
+      expr: GOOD_COUNT
+      description: The number of good items produced during a production run.
+      data_type: NUMBER
+
+    - name: REJECTED_COUNT
+      expr: REJECTED_COUNT
+      description: The number of rejected items during a production run.
+      data_type: NUMBER
+
+    - name: RUNTIME
+      expr: RUNTIME
+      description: The runtime of the production process excluding downtime.
+      data_type: NUMBER
+
+    - name: TOTAL_COUNT
+      expr: TOTAL_COUNT
+      description: The total number of items in the production run (good + rejected).
+      data_type: NUMBER
+
+
+verified_queries:
+  - name: OEE
+    question: What is the Overall Equipment Effectiveness (OEE) ?
+    sql:  "SELECT \n
+                (SUM(RUNTIME) / (SUM(RUNTIME) + \n
+                                SUM(CASE WHEN PLANNED_DOWNTIME THEN 1 ELSE 0 END) + \n
+                                SUM(CASE WHEN UNPLANNED_DOWNTIME THEN 1 ELSE 0 END))) * \n
+                (SUM(GOOD_COUNT) / SUM(TOTAL_COUNT)) * \n
+                (SUM(GOOD_COUNT) / SUM(TOTAL_COUNT)) AS OEE \n
+            FROM __OEE"
+
+     
+

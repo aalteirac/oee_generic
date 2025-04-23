@@ -1,0 +1,26 @@
+definition_version: '2'
+
+entities:
+  pkg:
+    type: application package
+    identifier: OEE_APP_PKG
+    stage: app_src.stage
+    manifest: native/app/manifest.yml
+    artifacts:
+      - src: native/app/*
+        dest: ./
+      - src: native/service/*
+        dest: ./service/
+     
+    meta:
+      role: ACCOUNTADMIN
+      warehouse: OEE_NATIVE_WH 
+  app:
+    type: application
+    identifier: '"OEE_APP_INSTANCE"'
+    from:
+      target: pkg
+    debug: false
+    meta:
+      role: ACCOUNTADMIN
+      warehouse: OEE_NATIVE_WH 
