@@ -1,4 +1,4 @@
-# Intro
+# INTRO
 
 This repo demonstrate an app that can be deployed either as
 - Snowflake Native App (with Containers)
@@ -14,6 +14,12 @@ Cortex Analyst is a fully-managed, LLM-powered Snowflake Cortex feature that hel
 With Cortex Analyst, business users can ask questions in natural language and receive direct answers without writing SQL. 
 
 Available as a convenient REST API, Cortex Analyst is seamlessly integrated into this application
+
+---
+
+# DEMO
+
+[![Demo Video](https://img.youtube.com/vi/-Oj7hlZzJtw/0.jpg)](https://www.youtube.com/watch?v=-Oj7hlZzJtw)
 
 ---
 
