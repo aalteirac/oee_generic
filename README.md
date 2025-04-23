@@ -15,6 +15,8 @@ With Cortex Analyst, business users can ask questions in natural language and re
 
 Available as a convenient REST API, Cortex Analyst is seamlessly integrated into this application
 
+The app offers a live editor to create and iterate on your semantic model(s)
+
 ---
 
 # DEMO
