@@ -1,43 +1,17 @@
-# TODO
-- <del> OK Find front framework for POC </del>
-- <del> OK Bundle front + back with express </del>
-- <del> OK Dockerize </del>
-- <del> OK CI/CD for Native App + SPCS </del>
-- <del> OK Clean the code/organise well, cause it's messy! </del>
-- <del> OK Live reload for full stack </del>
-- <del> OK Prepare snowflake connectivity with key pair </del>
-- <del> OK Set all auth info as env </del>
-- <del> OK Prepare dual auth for regular app and Native app </del>
-- <del> OK Cortex API backend Auth for Managed App </del>
-- <del> OK Cortex API backend Auth for Native App </del>
-- <del> OK Cortex API backend Auth auto detect deployment </del>
-- <del> OK Cortex Semantic model on the fly </del>
-- <del> OK Prep for chat in frontend </del>
-- <del> OK Fix Snow connection renewal </del>
-- <del> OK Disable chart when query retrun nothing...</del>
-- <del> OK Plug Cortex on partner data</del>
-- <del> OK Define queries for dashboard </del>
-- <del> OK Prepare a single table for easier cortex analyst implementation</del>
-- <del> OK Cortex async to investigate for long running task (non blocking)</del>
-- <del> OK Manage chart text depending on Dark/Light theme</del>
-- <del> OK Add privileges for snowflake DB, missing functions otherwise</del>
-- <del> OK Optimize docker image size</del>
-- <del> OK Add date filter on the dashboard</del>
-- <del> OK Changing to Streaming for a far far better UX</del>
-- <del> OK Auto charting</del>
-- <del> OK Style auto charts for dark/light</del>
-- <del> OK Fix Apex export menu style</del>
-- <del> OK Change Data Table for a paginated and sortable one</del>
-- <del> OK Websocket replace broadcast</del> 
-- <del> OK Make Semantic model editable from the UI</del>
-- <del> Fix Open History dsabled after navigation despite there are some...</del>
-- Fix talk to data
-- Customize Error message on the chat
-- Cortex from SPCS is BUGGGYYY
-- Limit data size for SQL answer, do not do chart, limit data table
-- Add BIN button on questions in the history
-- Get Michael's advices for a better dashboard
+This repo demonstrate an app that can be deployed either as
+- Snowflake Native App (with Containers)
+- Managed App hosted on prem or cloud managed containers
+- Connected App, app owned by the provider, plug on customer Snowflake account
 
+The code base is the same for the 3 options.
+Logic detect if running inside or outside Snowflake and adjust the authentication accordingly.
+
+The app demonstrate a basic old school dashboard and the next geenration to interact with Data, Cortex Analyst
+
+Cortex Analyst is a fully-managed, LLM-powered Snowflake Cortex feature that helps you create applications capable of reliably answering business questions based on your structured data in Snowflake. 
+With Cortex Analyst, business users can ask questions in natural language and receive direct answers without writing SQL. 
+
+Available as a convenient REST API, Cortex Analyst is seamlessly integrated into this application
 
 ---
 
