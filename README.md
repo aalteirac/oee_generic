@@ -1,3 +1,5 @@
+# Intro
+
 This repo demonstrate an app that can be deployed either as
 - Snowflake Native App (with Containers)
 - Managed App hosted on prem or cloud managed containers
