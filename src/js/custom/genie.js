@@ -3,8 +3,10 @@ import DataTable from '../components/data-table';
 import {basicSetup} from "codemirror";
 import {EditorView} from "@codemirror/view";
 import {yaml} from "@codemirror/lang-yaml";
+import { autocompletion } from "@codemirror/autocomplete";
 import dropdown from '../components/dropdown';
 import toast from "../components/toast";
+import {customCompletions,customTabBehavior,customAutocompleteTheme,lightAutocompleteTheme} from "./sem-completion"
 
 
 window.page2=async function(){
@@ -218,13 +220,20 @@ window.page2=async function(){
     }
 
     async function loadEditor(content){
+        let theme=lightAutocompleteTheme;
         if (curEditor){
             curEditor.destroy();
         }
+        if (isDark())
+            theme=customAutocompleteTheme;
         curEditor = new EditorView({
             doc: content,
             parent: document.querySelector(".yeditor"),
-            extensions: [basicSetup,yaml()]
+            extensions: [basicSetup,yaml(),
+                autocompletion({ override: [customCompletions]}),
+                customTabBehavior,
+                theme
+            ]
         })
     }
 
