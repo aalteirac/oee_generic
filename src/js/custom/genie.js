@@ -130,7 +130,7 @@ window.page2=async function(){
             if(isModifed(curModel.id)){
                 toast.warning('Changes not saved !!', {
                     gravity: 'top',
-                    position: 'left'
+                    position: 'center'
                 })
                 document.querySelector('.model-container').classList.remove('show');
                 return;
@@ -268,7 +268,7 @@ window.page2=async function(){
             if(isModifed(curModel.id)){
                 toast.warning('Changes not saved !!', {
                     gravity: 'top',
-                    position: 'left'
+                    position: 'center'
                 })
             }
             else{
@@ -282,7 +282,7 @@ window.page2=async function(){
             let models = getSavedModels();
             toast.success('Saved !!', {
                 gravity: 'top',
-                position: 'left'
+                position: 'center'
             })
         })
         const addModel = document.querySelector('#add-model')
